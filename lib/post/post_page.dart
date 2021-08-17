@@ -1,7 +1,3 @@
-import 'dart:io';
-
-import 'package:flutter/material.dart';
-
 import '../exports.dart';
 
 class PostPage extends StatefulWidget {
@@ -16,7 +12,40 @@ class PostPage extends StatefulWidget {
 }
 
 class _PostPageState extends State<PostPage> {
-  void _submitPost() {}
+  late File photo;
+
+  void _submitPost() async {
+    final UploadTask uploadResult = await _uploadFile();
+
+    debugPrint('Uploaded photo: $uploadResult');
+  }
+
+  Future<UploadTask> _uploadFile() async {
+    File file = photo;
+    UploadTask uploadTask;
+
+    Reference ref = FirebaseStorage.instance
+        .ref()
+        .child('playground')
+        .child('/some-image.jpg');
+
+    final metadata = SettableMetadata(
+      contentType: 'image/jpeg',
+      customMetadata: {
+        'picked-file-path': file.path,
+      },
+    );
+
+    uploadTask = ref.putFile(photo, metadata);
+
+    return Future.value(uploadTask);
+  }
+
+  @override
+  void initState() {
+    photo = File(widget.photo!.path);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +59,7 @@ class _PostPageState extends State<PostPage> {
             width: double.infinity,
             height: 300.0,
             child: Image.file(
-              File(widget.photo!.path),
+              photo,
               fit: BoxFit.cover,
             ),
           ),

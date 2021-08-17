@@ -1,12 +1,19 @@
-import 'package:flutter/material.dart';
+import './exports.dart';
 
-import './home/home_page.dart';
-
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  // FirebaseOptions firebaseOptions = const FirebaseOptions(
+  //   apiKey: '',
+  //   appId: '',
+  //   projectId: '',
+  //   messagingSenderId: '',
+  // );
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
