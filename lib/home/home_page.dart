@@ -1,7 +1,5 @@
-import 'package:wasteagram/post/post_page.dart';
-
 import '../exports.dart';
-import '../detail/detail_page.dart';
+import './widgets/waste_item_widget.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key? key, required this.title}) : super(key: key);
@@ -13,17 +11,31 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  _goDetailPage() {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => DetailPage()),
-    );
-  }
+  bool _isPicking = false;
+  late Stream<QuerySnapshot<WasteItem>> _wasteItems;
+
+  final _wasteItemsRef = FirebaseFirestore.instance
+      .collection('posts')
+      .withConverter<WasteItem>(
+        fromFirestore: (snapshots, _) => WasteItem.fromJson(snapshots.data()!),
+        toFirestore: (movie, _) => movie.toJson(),
+      );
 
   _pickImage() async {
+    if (_isPicking) {
+      return;
+    }
+
+    setState(() {
+      _isPicking = true;
+    });
     final ImagePicker _picker = ImagePicker();
 
     final XFile? photo = await _picker.pickImage(source: ImageSource.gallery);
-    debugPrint("Images picked: $photo");
+
+    setState(() {
+      _isPicking = false;
+    });
 
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -32,6 +44,29 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
+  }
+
+  _getAllPosts() async {
+    try {
+      final items = await _wasteItemsRef.get();
+
+      for (final item in items.docs) {
+        debugPrint(item.data().toJson().toString());
+      }
+    } on FirebaseException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(e.code),
+      ));
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // _getAllPosts();
+    setState(() {
+      _wasteItems = _wasteItemsRef.snapshots();
+    });
   }
 
   @override
@@ -48,46 +83,34 @@ class _HomePageState extends State<HomePage> {
       body: Column(
         children: <Widget>[
           Expanded(
-            child: Container(
-              color: Colors.amberAccent,
-              child: ListView(
-                padding: EdgeInsetsDirectional.all(10.0),
-                children: [
-                  Container(
-                    color: Colors.amber,
-                    child: ListTile(
-                      onTap: _goDetailPage,
-                      title: Text(
-                        DateTime.now().toString(),
-                      ),
-                      trailing: FittedBox(
-                        child: Text(
-                          '3',
-                          style: TextStyle(fontSize: 24),
-                        ),
-                      ),
-                    ),
-                  ),
-                  ListTile(
-                    onTap: _goDetailPage,
-                    title: Text(
-                      DateTime.now().toString(),
-                    ),
-                    trailing: FittedBox(
-                      child: Text(
-                        '8',
-                        style: TextStyle(fontSize: 24),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            child: StreamBuilder<QuerySnapshot<WasteItem>>(
+                stream: _wasteItems,
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return Text('Something went wrong');
+                  }
+
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  }
+
+                  final data = snapshot.requireData;
+
+                  return ListView.builder(
+                    itemExtent: 80.0,
+                    itemCount: data.size,
+                    itemBuilder: (context, index) {
+                      return WasteItemWidget(
+                        wasteItem: data.docs[index].data(),
+                      );
+                    },
+                  );
+                }),
           )
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _pickImage,
+        onPressed: _isPicking ? null : _pickImage,
         tooltip: 'Pick Images',
         child: Icon(Icons.camera_alt),
       ),

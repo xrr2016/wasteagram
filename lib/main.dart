@@ -7,13 +7,6 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  // FirebaseOptions firebaseOptions = const FirebaseOptions(
-  //   apiKey: '',
-  //   appId: '',
-  //   projectId: '',
-  //   messagingSenderId: '',
-  // );
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

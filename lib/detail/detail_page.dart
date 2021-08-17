@@ -1,6 +1,10 @@
-import 'package:flutter/material.dart';
+import '../exports.dart';
 
 class DetailPage extends StatelessWidget {
+  final WasteItem wasteItem;
+
+  const DetailPage({required this.wasteItem});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,7 +21,7 @@ class DetailPage extends StatelessWidget {
           Container(
             margin: EdgeInsets.symmetric(vertical: 40.0),
             child: Text(
-              DateTime.now().toString(),
+              wasteItem.date.toDate().toString(),
               style: TextStyle(fontSize: 26.0),
             ),
           ),
@@ -26,21 +30,21 @@ class DetailPage extends StatelessWidget {
             width: double.infinity,
             height: 300,
             child: Image.network(
-              'https://coldstone.fun/images/react-context-hooks/cover.jpg',
+              wasteItem.photo,
               fit: BoxFit.cover,
             ),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 30.0),
             child: Text(
-              '9 Items',
+              '${wasteItem.waste} Items',
               style: TextStyle(fontSize: 26.0),
             ),
           ),
           Spacer(),
           Padding(
             padding: const EdgeInsets.only(bottom: 80),
-            child: Text('location'),
+            child: Text(wasteItem.location),
           ),
         ],
       ),

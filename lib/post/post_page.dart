@@ -13,32 +13,54 @@ class PostPage extends StatefulWidget {
 
 class _PostPageState extends State<PostPage> {
   late File photo;
+  FirebaseStorage storage = FirebaseStorage.instance;
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+  final CollectionReference _wasteItemsRef = FirebaseFirestore.instance
+      .collection('posts')
+      .withConverter<WasteItem>(
+        fromFirestore: (snapshots, _) => WasteItem.fromJson(snapshots.data()!),
+        toFirestore: (movie, _) => movie.toJson(),
+      );
 
   void _submitPost() async {
-    final UploadTask uploadResult = await _uploadFile();
-
-    debugPrint('Uploaded photo: $uploadResult');
+    await _uploadFile();
+    // await _saveWasteItem();
   }
 
-  Future<UploadTask> _uploadFile() async {
-    File file = photo;
-    UploadTask uploadTask;
+  Future<void> _uploadFile() async {
+    // final appDir = await getApplicationDocumentsDirectory();
+    final fileName = basename(photo.path);
 
-    Reference ref = FirebaseStorage.instance
-        .ref()
-        .child('playground')
-        .child('/some-image.jpg');
+    try {
+      TaskSnapshot task = await storage.ref(fileName).putFile(photo);
 
-    final metadata = SettableMetadata(
-      contentType: 'image/jpeg',
-      customMetadata: {
-        'picked-file-path': file.path,
-      },
-    );
+      debugPrint((task.bytesTransferred / task.totalBytes).toString());
+      debugPrint(task.ref.fullPath);
+    } on FirebaseException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(e.code),
+      ));
+    }
+  }
 
-    uploadTask = ref.putFile(photo, metadata);
-
-    return Future.value(uploadTask);
+  _saveWasteItem() async {
+    try {
+      await _uploadFile();
+      // await _wasteItemsRef.add(
+      //   WasteItem(
+      //     photo: 'https://coldstone.fun/images/learn-ast/ast-cover.jpg',
+      //     location: 'china',
+      //     waste: 5,
+      //     date: Timestamp.now(),
+      //   ),
+      // );
+      Navigator.pop(context);
+    } on FirebaseException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(e.code),
+      ));
+    }
   }
 
   @override
