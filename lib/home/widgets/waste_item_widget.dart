@@ -23,6 +23,8 @@ class _WasteItemWidgetState extends State<WasteItemWidget> {
   @override
   Widget build(BuildContext context) {
     return Dismissible(
+      direction: DismissDirection.endToStart,
+      background: Container(color: Colors.redAccent),
       key: Key(widget.wasteItem.hashCode.toString()),
       onDismissed: (DismissDirection direction) {
         debugPrint('onDismissed ${direction.index}');
@@ -30,7 +32,14 @@ class _WasteItemWidgetState extends State<WasteItemWidget> {
       child: ListTile(
         // tileColor: Colors.teal,
         onTap: _goDetailPage,
-        leading: Image.network(widget.wasteItem.photo),
+        leading: Image(
+          image: ResizeImage(
+            NetworkImage(widget.wasteItem.photo),
+            width: 50,
+            height: 50,
+          ),
+          fit: BoxFit.cover,
+        ),
         title: Text(widget.wasteItem.date.toDate().toString()),
         trailing: Text(widget.wasteItem.waste.toString()),
       ),

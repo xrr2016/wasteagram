@@ -18,6 +18,7 @@ class _PostPageState extends State<PostPage> {
   double _uploadedProgress = 0.0;
   FirebaseStorage storage = FirebaseStorage.instance;
   FirebaseFirestore firestore = FirebaseFirestore.instance;
+  TextEditingController _textEditingController = TextEditingController();
 
   final CollectionReference _wasteItemsRef = FirebaseFirestore.instance
       .collection('posts')
@@ -25,10 +26,6 @@ class _PostPageState extends State<PostPage> {
         fromFirestore: (snapshots, _) => WasteItem.fromJson(snapshots.data()!),
         toFirestore: (movie, _) => movie.toJson(),
       );
-
-  void _submitPost() async {
-    await _saveWasteItem();
-  }
 
   Future<void> _uploadFile() async {
     UploadTask task = storage.ref(fileName).putFile(photo);
@@ -38,15 +35,17 @@ class _PostPageState extends State<PostPage> {
         _uploadedProgress =
             (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
       });
-      print('Task state: ${snapshot.state}');
     }, onError: (e) {
       if (e.code == 'canceled') {
-        print('The task has been canceled');
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('The task has been canceled'),
+        ));
       }
       if (task.snapshot.state == TaskState.canceled) {
-        print('The task has been canceled');
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('The task has been canceled'),
+        ));
       }
-      print(TaskState.error);
     });
 
     try {
@@ -61,16 +60,57 @@ class _PostPageState extends State<PostPage> {
     }
   }
 
+  _getCurrentLocation() async {
+    Location location = Location();
+    bool _serviceEnabled;
+    PermissionStatus _permissionGranted;
+    LocationData _locationData;
+
+    _serviceEnabled = await location.serviceEnabled();
+
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      if (!_serviceEnabled) {
+        return null;
+      }
+    }
+
+    _permissionGranted = await location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await location.requestPermission();
+      if (_permissionGranted != PermissionStatus.granted) {
+        return null;
+      }
+    }
+
+    _locationData = await location.getLocation();
+
+    List<Placemark> placemarks = await placemarkFromCoordinates(
+        _locationData.latitude!, _locationData.longitude!);
+
+    return placemarks.first;
+  }
+
   _saveWasteItem() async {
     try {
+      final String waste = _textEditingController.text;
+
+      if (waste.trim().isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Plase enter waste number~'),
+        ));
+        return;
+      }
+
       await _uploadFile();
-      String imageURL = await storage.ref(fileName).getDownloadURL();
+      final String imageURL = await storage.ref(fileName).getDownloadURL();
+      final location = await _getCurrentLocation();
 
       await _wasteItemsRef.add(
         WasteItem(
           photo: imageURL,
-          location: 'china',
-          waste: 5,
+          location: '${location.country} ${location.name}',
+          waste: int.parse(waste),
           date: Timestamp.now(),
         ),
       );
@@ -79,6 +119,8 @@ class _PostPageState extends State<PostPage> {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(e.code),
       ));
+    } catch (e) {
+      debugPrint(e.toString());
     }
   }
 
@@ -91,25 +133,31 @@ class _PostPageState extends State<PostPage> {
 
   @override
   Widget build(BuildContext context) {
+    int screenWidth = MediaQuery.of(context).size.width.toInt();
+
     return Scaffold(
       appBar: AppBar(
         title: Text('New Post'),
       ),
       body: Column(
         children: [
-          Container(
-            width: double.infinity,
-            height: 300.0,
-            child: Image.file(
-              photo,
-              fit: BoxFit.cover,
-            ),
-          ),
           LinearProgressIndicator(value: _uploadedProgress),
+          SizedBox(
+            height: 50,
+          ),
+          Image(
+            image: ResizeImage(
+              FileImage(photo),
+              width: screenWidth,
+              height: 500,
+            ),
+            fit: BoxFit.cover,
+          ),
           Container(
             margin: const EdgeInsets.only(top: 20.0),
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: TextField(
+              controller: _textEditingController,
               textAlign: TextAlign.center,
               keyboardType: TextInputType.number,
               keyboardAppearance: Brightness.dark,
@@ -124,7 +172,7 @@ class _PostPageState extends State<PostPage> {
               style: ElevatedButton.styleFrom(
                 textStyle: const TextStyle(fontSize: 20),
               ),
-              onPressed: _submitPost,
+              onPressed: _saveWasteItem,
               child: const Text('Submit'),
             ),
           ),

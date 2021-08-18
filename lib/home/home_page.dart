@@ -46,19 +46,19 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  _getAllPosts() async {
-    try {
-      final items = await _wasteItemsRef.get();
+  // _getAllPosts() async {
+  //   try {
+  //     final items = await _wasteItemsRef.get();
 
-      for (final item in items.docs) {
-        debugPrint(item.data().toJson().toString());
-      }
-    } on FirebaseException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(e.code),
-      ));
-    }
-  }
+  //     for (final item in items.docs) {
+  //       debugPrint(item.data().toJson().toString());
+  //     }
+  //   } on FirebaseException catch (e) {
+  //     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+  //       content: Text(e.code),
+  //     ));
+  //   }
+  // }
 
   @override
   void initState() {
