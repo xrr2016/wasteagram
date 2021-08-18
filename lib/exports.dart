@@ -1,5 +1,6 @@
 export 'dart:io';
 export 'dart:convert';
+export 'dart:async';
 
 export 'package:location/location.dart';
 export 'package:flutter/material.dart';

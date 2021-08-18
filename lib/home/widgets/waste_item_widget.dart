@@ -32,13 +32,16 @@ class _WasteItemWidgetState extends State<WasteItemWidget> {
       child: ListTile(
         // tileColor: Colors.teal,
         onTap: _goDetailPage,
-        leading: Image(
-          image: ResizeImage(
-            NetworkImage(widget.wasteItem.photo),
-            width: 50,
-            height: 50,
+        leading: Hero(
+          tag: widget.wasteItem,
+          child: Image(
+            image: ResizeImage(
+              NetworkImage(widget.wasteItem.photo),
+              width: 50,
+              height: 50,
+            ),
+            fit: BoxFit.cover,
           ),
-          fit: BoxFit.cover,
         ),
         title: Text(widget.wasteItem.date.toDate().toString()),
         trailing: Text(widget.wasteItem.waste.toString()),

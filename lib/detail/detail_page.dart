@@ -29,13 +29,16 @@ class DetailPage extends StatelessWidget {
             padding: const EdgeInsets.all(20.0),
             width: double.infinity,
             height: 300,
-            child: Image(
-              image: ResizeImage(
-                NetworkImage(wasteItem.photo),
-                width: 374,
-                height: 260,
+            child: Hero(
+              tag: wasteItem,
+              child: Image(
+                image: ResizeImage(
+                  NetworkImage(wasteItem.photo),
+                  width: 374,
+                  height: 260,
+                ),
+                fit: BoxFit.cover,
               ),
-              fit: BoxFit.cover,
             ),
           ),
           Padding(
