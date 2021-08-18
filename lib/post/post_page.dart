@@ -12,7 +12,10 @@ class PostPage extends StatefulWidget {
 }
 
 class _PostPageState extends State<PostPage> {
-  late File photo;
+  late final File photo;
+  late final fileName;
+
+  double _uploadedProgress = 0.0;
   FirebaseStorage storage = FirebaseStorage.instance;
   FirebaseFirestore firestore = FirebaseFirestore.instance;
 
@@ -24,19 +27,33 @@ class _PostPageState extends State<PostPage> {
       );
 
   void _submitPost() async {
-    await _uploadFile();
-    // await _saveWasteItem();
+    await _saveWasteItem();
   }
 
   Future<void> _uploadFile() async {
-    // final appDir = await getApplicationDocumentsDirectory();
-    final fileName = basename(photo.path);
+    UploadTask task = storage.ref(fileName).putFile(photo);
+
+    task.snapshotEvents.listen((TaskSnapshot snapshot) {
+      setState(() {
+        _uploadedProgress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+      });
+      print('Task state: ${snapshot.state}');
+    }, onError: (e) {
+      if (e.code == 'canceled') {
+        print('The task has been canceled');
+      }
+      if (task.snapshot.state == TaskState.canceled) {
+        print('The task has been canceled');
+      }
+      print(TaskState.error);
+    });
 
     try {
-      TaskSnapshot task = await storage.ref(fileName).putFile(photo);
-
-      debugPrint((task.bytesTransferred / task.totalBytes).toString());
-      debugPrint(task.ref.fullPath);
+      await task;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Upload complete.'),
+      ));
     } on FirebaseException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(e.code),
@@ -47,14 +64,16 @@ class _PostPageState extends State<PostPage> {
   _saveWasteItem() async {
     try {
       await _uploadFile();
-      // await _wasteItemsRef.add(
-      //   WasteItem(
-      //     photo: 'https://coldstone.fun/images/learn-ast/ast-cover.jpg',
-      //     location: 'china',
-      //     waste: 5,
-      //     date: Timestamp.now(),
-      //   ),
-      // );
+      String imageURL = await storage.ref(fileName).getDownloadURL();
+
+      await _wasteItemsRef.add(
+        WasteItem(
+          photo: imageURL,
+          location: 'china',
+          waste: 5,
+          date: Timestamp.now(),
+        ),
+      );
       Navigator.pop(context);
     } on FirebaseException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -66,6 +85,7 @@ class _PostPageState extends State<PostPage> {
   @override
   void initState() {
     photo = File(widget.photo!.path);
+    fileName = basename(widget.photo!.path);
     super.initState();
   }
 
@@ -85,6 +105,7 @@ class _PostPageState extends State<PostPage> {
               fit: BoxFit.cover,
             ),
           ),
+          LinearProgressIndicator(value: _uploadedProgress),
           Container(
             margin: const EdgeInsets.only(top: 20.0),
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
