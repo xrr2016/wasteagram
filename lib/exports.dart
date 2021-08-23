@@ -16,11 +16,17 @@ export 'package:flutter/animation.dart';
 export 'package:geocoding/geocoding.dart'
     show placemarkFromCoordinates, Placemark;
 
+export 'package:hive/hive.dart';
+export 'package:hive_flutter/hive_flutter.dart';
+
 export './home/home_page.dart';
-export './auth/auth_page.dart';
+export './auth/login_page.dart';
+export './auth/signup_page.dart';
 export './post/post_page.dart';
 export './detail/detail_page.dart';
 
 export './models/waste_item.dart';
 
 export './state/app_state.dart';
+
+export './auth/auth_service.dart';

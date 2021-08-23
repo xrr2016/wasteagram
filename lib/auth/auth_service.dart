@@ -1,8 +1,17 @@
 import '../exports.dart';
 
 class AuthService {
+  static late User? user;
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+
+  static AuthService get instance => AuthService();
+
+  Future<bool> isLogined() async {
+    return _firebaseAuth.currentUser != null;
+  }
+
   listenStateChange() {
-    FirebaseAuth.instance.authStateChanges().listen((User? user) {
+    _firebaseAuth.authStateChanges().listen((User? user) {
       if (user == null) {
         print('User is currently signed out!');
       } else {
@@ -13,53 +22,42 @@ class AuthService {
 
   register(String email, String password) async {
     try {
-      UserCredential userCredential = await FirebaseAuth.instance
+      UserCredential userCredential = await _firebaseAuth
           .createUserWithEmailAndPassword(email: email, password: password);
 
-      debugPrint(userCredential.user.toString());
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'weak-password') {
-        print('The password provided is too weak.');
-      } else if (e.code == 'email-already-in-use') {
-        print('The account already exists for that email.');
-      }
+      user = userCredential.user;
     } catch (e) {
-      print(e);
+      throw e;
     }
   }
 
   verifyUserEmail() async {
-    User? user = FirebaseAuth.instance.currentUser;
+    User? user = _firebaseAuth.currentUser;
 
     if (user != null && !user.emailVerified) {
       await user.sendEmailVerification();
     }
   }
 
-  signIn(String email, String password) async {
+  loginIn(String email, String password) async {
     try {
-      UserCredential userCredential = await FirebaseAuth.instance
+      UserCredential userCredential = await _firebaseAuth
           .signInWithEmailAndPassword(email: email, password: password);
 
-      debugPrint(userCredential.user.toString());
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        print('No user found for that email.');
-      } else if (e.code == 'wrong-password') {
-        print('Wrong password provided for that user.');
-      }
+      user = userCredential.user;
+    } catch (e) {
+      throw e;
     }
   }
 
   signOut() async {
-    await FirebaseAuth.instance.signOut();
+    await _firebaseAuth.signOut();
   }
 
   anonymousSignIn() async {
     try {
-      UserCredential userCredential =
-          await FirebaseAuth.instance.signInAnonymously();
-      debugPrint(userCredential.user.toString());
+      UserCredential userCredential = await _firebaseAuth.signInAnonymously();
+      user = userCredential.user;
     } on FirebaseAuthException catch (e) {
       print(e.code);
     } catch (e) {

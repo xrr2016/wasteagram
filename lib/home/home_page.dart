@@ -1,11 +1,8 @@
 import '../exports.dart';
+import './widgets/home_drawer.dart';
 import './widgets/waste_item_widget.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({Key? key, required this.title}) : super(key: key);
-
-  final String title;
-
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -13,7 +10,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   bool _isPicking = false;
   late Stream<QuerySnapshot<WasteItem>> _wasteItems;
-
   final _wasteItemsRef = FirebaseFirestore.instance
       .collection('posts')
       .withConverter<WasteItem>(
@@ -46,19 +42,13 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // _getAllPosts() async {
-  //   try {
-  //     final items = await _wasteItemsRef.get();
-
-  //     for (final item in items.docs) {
-  //       debugPrint(item.data().toJson().toString());
-  //     }
-  //   } on FirebaseException catch (e) {
-  //     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-  //       content: Text(e.code),
-  //     ));
-  //   }
-  // }
+  _goAuthPage() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => LoginPage(),
+      ),
+    );
+  }
 
   @override
   void initState() {
@@ -72,13 +62,21 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: HomeDrawer(),
       appBar: AppBar(
+        centerTitle: true,
         title: Text(
-          widget.title,
+          'Wasteagram',
           style: TextStyle(
             fontStyle: FontStyle.italic,
           ),
         ),
+        actions: [
+          IconButton(
+            onPressed: _goAuthPage,
+            icon: Icon(Icons.account_circle_outlined),
+          )
+        ],
       ),
       body: Column(
         children: <Widget>[
@@ -109,12 +107,22 @@ class _HomePageState extends State<HomePage> {
           )
         ],
       ),
+      bottomNavigationBar: BottomNavigationBar(items: [
+        BottomNavigationBarItem(
+          label: 'Home',
+          icon: Icon(Icons.home_outlined),
+        ),
+        BottomNavigationBarItem(
+          label: 'Friends',
+          icon: Icon(Icons.grade_outlined),
+        )
+      ]),
       floatingActionButton: FloatingActionButton(
         onPressed: _isPicking ? null : _pickImage,
         tooltip: 'Pick Images',
         child: Icon(Icons.camera_alt),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }
