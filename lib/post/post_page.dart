@@ -141,41 +141,77 @@ class _PostPageState extends State<PostPage> {
       ),
       body: Column(
         children: [
-          LinearProgressIndicator(value: _uploadedProgress),
-          SizedBox(
-            height: 50,
-          ),
-          Image(
-            image: ResizeImage(
-              FileImage(photo),
-              width: screenWidth,
-              height: 500,
-            ),
-            fit: BoxFit.cover,
-          ),
+          // LinearProgressIndicator(value: _uploadedProgress),
+          SizedBox(height: 30),
+          TextField(),
+          SizedBox(height: 30),
           Container(
-            margin: const EdgeInsets.only(top: 20.0),
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: TextField(
-              controller: _textEditingController,
-              textAlign: TextAlign.center,
-              keyboardType: TextInputType.number,
-              keyboardAppearance: Brightness.dark,
-            ),
-          ),
-          Spacer(),
-          Container(
+            color: Colors.blue,
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            height: 60.0,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                textStyle: const TextStyle(fontSize: 20),
-              ),
-              onPressed: _saveWasteItem,
-              child: const Text('Submit'),
+            child: Wrap(
+              alignment: WrapAlignment.start,
+              spacing: 12.0,
+              children: [
+                Container(
+                  width: 120.0,
+                  height: 120.0,
+                  // margin: EdgeInsets.only(right: 12.0, bottom: 12.0),
+                  child: Image(
+                    image: ResizeImage(
+                      FileImage(photo),
+                      width: screenWidth,
+                      height: 500,
+                    ),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                Container(
+                  width: 120.0,
+                  height: 120.0,
+                  child: Image(
+                    image: ResizeImage(
+                      FileImage(photo),
+                      width: screenWidth,
+                      height: 500,
+                    ),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                Container(
+                  width: 120.0,
+                  height: 120.0,
+                  child: IconButton(
+                    icon: Icon(Icons.add),
+                    onPressed: () {},
+                  ),
+                ),
+              ],
             ),
           ),
+
+          // Container(
+          //   margin: const EdgeInsets.only(top: 20.0),
+          //   padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          //   child: TextField(
+          //     controller: _textEditingController,
+          //     textAlign: TextAlign.center,
+          //     keyboardType: TextInputType.number,
+          //     keyboardAppearance: Brightness.dark,
+          //   ),
+          // ),
+          Spacer(),
+          // Container(
+          //   width: double.infinity,
+          //   padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          //   height: 60.0,
+          //   child: ElevatedButton(
+          //     style: ElevatedButton.styleFrom(
+          //       textStyle: const TextStyle(fontSize: 20),
+          //     ),
+          //     onPressed: _saveWasteItem,
+          //     child: const Text('Submit'),
+          //   ),
+          // ),
           SizedBox(height: 88.0)
         ],
       ),

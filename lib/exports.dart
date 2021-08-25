@@ -28,5 +28,6 @@ export './detail/detail_page.dart';
 export './models/waste_item.dart';
 
 export './state/app_state.dart';
+export './state/app_state_provider.dart';
 
 export './auth/auth_service.dart';

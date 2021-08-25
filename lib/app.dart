@@ -1,5 +1,3 @@
-import 'package:wasteagram/state/app_state_provider.dart';
-
 import './exports.dart';
 
 class App extends StatelessWidget {
@@ -9,9 +7,7 @@ class App extends StatelessWidget {
       child: MaterialApp(
         title: 'Flutter Demo',
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
+        theme: ThemeData(primarySwatch: Colors.blue),
         home: HomePage(),
       ),
     );

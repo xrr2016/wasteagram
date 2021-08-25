@@ -5,10 +5,11 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "wasteagram",
+      "name": "DEBUG(WEB)",
       "request": "launch",
       "type": "dart",
-      "program": "lib/main.dart"
+      "program": "lib/main.dart",
+      "args": ["-d", "chrome"]
     },
     {
       "name": "wasteagram (profile mode)",
