@@ -37,7 +37,7 @@ class _SignupPageState extends State<SignupPage> {
     }
 
     try {
-      await AuthService.instance.register(_email, _password);
+      await authService.register(_email, _password);
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (ctx) => HomePage()),

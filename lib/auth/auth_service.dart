@@ -1,10 +1,7 @@
 import '../exports.dart';
 
 class AuthService {
-  static late User? user;
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-
-  static AuthService get instance => AuthService();
 
   Future<bool> isLogined() async {
     return _firebaseAuth.currentUser != null;
@@ -22,10 +19,14 @@ class AuthService {
 
   register(String email, String password) async {
     try {
-      UserCredential userCredential = await _firebaseAuth
-          .createUserWithEmailAndPassword(email: email, password: password);
-
-      user = userCredential.user;
+      UserCredential userCredential =
+          await _firebaseAuth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      userService.save(userCredential.user);
+    } on FirebaseAuthException catch (e) {
+      throw e;
     } catch (e) {
       throw e;
     }
@@ -39,29 +40,36 @@ class AuthService {
     }
   }
 
-  loginIn(String email, String password) async {
+  signIn(String email, String password) async {
     try {
-      UserCredential userCredential = await _firebaseAuth
-          .signInWithEmailAndPassword(email: email, password: password);
-
-      user = userCredential.user;
+      UserCredential credential =
+          await _firebaseAuth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      userService.save(credential.user);
+      debugPrint(credential.toString());
+    } on FirebaseAuthException catch (e) {
+      throw e;
     } catch (e) {
+      print(e.toString());
       throw e;
     }
   }
 
-  signOut() async {
+  logOut() async {
     await _firebaseAuth.signOut();
+    userService.remove();
   }
 
   anonymousSignIn() async {
     try {
       UserCredential userCredential = await _firebaseAuth.signInAnonymously();
-      user = userCredential.user;
+      userService.save(userCredential.user);
     } on FirebaseAuthException catch (e) {
-      print(e.code);
+      throw e;
     } catch (e) {
-      print(e);
+      throw e;
     }
   }
 }

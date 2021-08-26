@@ -1,8 +1,6 @@
 import '../../exports.dart';
 
 class HomeDrawer extends StatelessWidget {
-  const HomeDrawer({Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -41,7 +39,10 @@ class HomeDrawer extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.power_settings_new),
             title: Text('Logout'),
-            onTap: () => Navigator.pushNamed(context, "language"),
+            onTap: () {
+              authService.logOut();
+              Navigator.pop(context);
+            },
           ),
         ],
       ),

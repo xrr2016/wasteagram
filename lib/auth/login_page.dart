@@ -37,7 +37,7 @@ class _LoginPageState extends State<LoginPage> {
     }
 
     try {
-      await AuthService.instance.loginIn(_email, _password);
+      await authService.signIn(_email, _password);
 
       Navigator.pushAndRemoveUntil(
         context,
