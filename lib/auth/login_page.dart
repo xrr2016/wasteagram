@@ -63,11 +63,14 @@ class _LoginPageState extends State<LoginPage> {
       appBar: AppBar(
         title: Text('Login'),
         actions: [
-          TextButton(
-            onPressed: _goToSignupPage,
-            child: Text(
-              'New Account',
-              style: TextStyle(color: Colors.white),
+          Padding(
+            padding: const EdgeInsets.only(right: 18.0),
+            child: TextButton(
+              onPressed: _goToSignupPage,
+              child: Text(
+                'New Account',
+                style: TextStyle(color: Colors.white),
+              ),
             ),
           )
         ],

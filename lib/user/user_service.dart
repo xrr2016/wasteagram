@@ -15,8 +15,8 @@ class UserService {
     debugPrint('UserService init');
   }
 
-  save(User? user) async {
-    await box.put(user!.uid, user);
+  save(UserModel user) async {
+    await box.put(user.uid, user);
     _uid = user.uid;
   }
 
@@ -25,3 +25,5 @@ class UserService {
     _uid = '';
   }
 }
+
+final UserService userService = UserService();

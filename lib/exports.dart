@@ -26,15 +26,11 @@ export './post/post_page.dart';
 export './detail/detail_page.dart';
 
 export './models/waste_item.dart';
+export './user/user_model.dart';
 
 export './state/app_state.dart';
 export './state/app_state_provider.dart';
 
 export './auth/auth_service.dart';
 export './user/user_service.dart';
-
-import './auth/auth_service.dart';
-import './user/user_service.dart';
-
-final AuthService authService = AuthService();
-final UserService userService = UserService();
+export './services/app_services.dart';

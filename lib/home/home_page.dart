@@ -107,22 +107,24 @@ class _HomePageState extends State<HomePage> {
           )
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(items: [
-        BottomNavigationBarItem(
-          label: 'Home',
-          icon: Icon(Icons.home_outlined),
-        ),
-        BottomNavigationBarItem(
-          label: 'Friends',
-          icon: Icon(Icons.grade_outlined),
-        )
-      ]),
+      // bottomNavigationBar: BottomNavigationBar(
+      //   items: [
+      //     BottomNavigationBarItem(
+      //       label: 'Home',
+      //       icon: Icon(Icons.home_outlined),
+      //     ),
+      //     BottomNavigationBarItem(
+      //       label: 'Friends',
+      //       icon: Icon(Icons.grade_outlined),
+      //     )
+      //   ],
+      // ),
       floatingActionButton: FloatingActionButton(
         onPressed: _isPicking ? null : _pickImage,
         tooltip: 'Pick Images',
         child: Icon(Icons.camera_alt),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }

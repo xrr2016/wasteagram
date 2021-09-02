@@ -24,7 +24,7 @@ class AuthService {
         email: email,
         password: password,
       );
-      userService.save(userCredential.user);
+      // userService.save(userCredential.user);
     } on FirebaseAuthException catch (e) {
       throw e;
     } catch (e) {
@@ -47,8 +47,12 @@ class AuthService {
         email: email,
         password: password,
       );
-      userService.save(credential.user);
-      debugPrint(credential.toString());
+      // UserModel userModel = UserModel(
+      //   displayName: credential.user.displayName,
+      // );
+
+      // userService.save(userModel);
+      debugPrint(credential.user.toString());
     } on FirebaseAuthException catch (e) {
       throw e;
     } catch (e) {
@@ -65,7 +69,7 @@ class AuthService {
   anonymousSignIn() async {
     try {
       UserCredential userCredential = await _firebaseAuth.signInAnonymously();
-      userService.save(userCredential.user);
+      // userService.save(userCredential.user);
     } on FirebaseAuthException catch (e) {
       throw e;
     } catch (e) {
@@ -73,3 +77,5 @@ class AuthService {
     }
   }
 }
+
+final AuthService authService = AuthService();

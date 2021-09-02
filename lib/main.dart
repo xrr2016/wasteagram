@@ -6,7 +6,7 @@ void main() async {
     WidgetsFlutterBinding.ensureInitialized();
     await Firebase.initializeApp();
     await Hive.initFlutter();
-    userService.init();
+    await userService.init();
     FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
 
     runApp(App());
